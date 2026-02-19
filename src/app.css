@@ -1,0 +1,56 @@
+@import 'tailwindcss';
+
+/* Design tokens: warm, earthy, bento-friendly */
+@theme {
+	/* Surfaces & neutrals */
+	--color-surface: oklch(0.98 0.01 85);
+	--color-surface-elevated: oklch(1 0 0);
+	--color-border: oklch(0.88 0.02 85);
+	--color-muted: oklch(0.55 0.02 85);
+	/* Accent: terracotta / warm */
+	--color-primary: oklch(0.6 0.15 45);
+	--color-primary-hover: oklch(0.55 0.16 45);
+	/* Success (streaks) */
+	--color-success: oklch(0.55 0.18 145);
+	/* Heatmap intensity steps */
+	--color-heat-0: oklch(0.96 0.02 85);
+	--color-heat-1: oklch(0.85 0.08 75);
+	--color-heat-2: oklch(0.72 0.12 65);
+	--color-heat-3: oklch(0.6 0.15 55);
+	--color-heat-4: oklch(0.5 0.14 45);
+	/* Typography */
+	--font-sans: 'DM Sans', system-ui, sans-serif;
+	--font-display: 'Fraunces', 'DM Sans', system-ui, sans-serif;
+	/* Spacing & radius (bento-friendly) */
+	--radius-card: 1rem;
+	--radius-button: 0.75rem;
+	--radius-input: 0.5rem;
+	/* Motion */
+	--ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+	--duration-fast: 150ms;
+	--duration-normal: 200ms;
+}
+
+/* Base */
+@layer base {
+	html {
+		@apply antialiased;
+		font-family: var(--font-sans);
+		background-color: var(--color-surface);
+	}
+	body {
+		min-height: 100dvh;
+		color: oklch(0.25 0.02 85);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		*, *::before, *::after {
+			animation-duration: 0.01ms !important;
+			transition-duration: 0.01ms !important;
+		}
+	}
+	/* Consistent focus for keyboard users */
+	:focus-visible {
+		outline: 2px solid var(--color-primary);
+		outline-offset: 2px;
+	}
+}
