@@ -1,12 +1,24 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { invalidateAll } from '$app/navigation';
 
 	let { children } = $props();
+
+	// Sync user's timezone to a cookie so server can show "today" in their local date
+	$effect(() => {
+		const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : '';
+		if (!tz) return;
+		const existing = typeof document !== 'undefined' ? document.cookie.replace(/.*\btz=([^;]*).*/, '$1') : '';
+		if (decodeURIComponent(existing) === tz) return;
+		document.cookie = `tz=${encodeURIComponent(tz)};path=/;max-age=31536000;SameSite=Lax`;
+		invalidateAll();
+	});
 
 	const navItems = [
 		{ href: '/', label: 'Today' },
 		{ href: '/week', label: 'Week' },
 		{ href: '/month', label: 'Month' },
+		{ href: '/todos', label: 'Todos' },
 		{ href: '/stats', label: 'Stats' },
 		{ href: '/reading', label: 'Reading' }
 	];

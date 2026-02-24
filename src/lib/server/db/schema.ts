@@ -56,3 +56,19 @@ export const sessions = sqliteTable('sessions', {
 	expiresAt: integer('expires_at').notNull(),
 	createdAt: text('created_at').notNull()
 });
+
+/** Todo cadence: daily | weekly | monthly | yearly. emailReminder stored as JSON. */
+export const todos = sqliteTable('todos', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	title: text('title').notNull(),
+	cadence: text('cadence').notNull().default('daily'),
+	recurring: integer('recurring', { mode: 'boolean' }).notNull().default(false),
+	dueAt: text('due_at'),
+	/** JSON: { enabled, when, value? } for EmailReminder */
+	emailReminder: text('email_reminder').notNull().default('{"enabled":false,"when":"at_time"}'),
+	completed: integer('completed', { mode: 'boolean' }).notNull().default(false),
+	completedAt: text('completed_at'),
+	/** Weekly: day 0-6; monthly: day 1-31; yearly: e.g. "03-15" */
+	recurrenceDetail: text('recurrence_detail'),
+	createdAt: text('created_at').notNull()
+});

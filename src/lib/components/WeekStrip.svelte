@@ -4,6 +4,7 @@
 		label: string;
 		completed: boolean;
 		count?: number;
+		dueCount?: number;
 	}
 
 	interface Props {
@@ -19,7 +20,7 @@
 		<div
 			class="flex flex-1 flex-col items-center gap-1 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-2"
 			role="listitem"
-			title="{day.date}: {day.completed ? 'Done' : 'Not done'}"
+			title="{day.date}: {day.completed ? 'Done' : 'Not done'}{typeof day.dueCount === 'number' && day.dueCount > 0 ? ` (${day.count ?? 0}/${day.dueCount} habits)` : ''}"
 		>
 			<span class="text-xs font-medium text-[var(--color-muted)]">{day.label}</span>
 			<span

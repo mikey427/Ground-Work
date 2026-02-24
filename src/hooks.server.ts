@@ -16,11 +16,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const pathname = event.url.pathname;
 	const isLoginPage = pathname === '/login';
+	const isApi = pathname.startsWith('/api/');
 
 	if (isLoginPage && event.locals.session) {
 		throw redirect(302, '/');
 	}
 	if (!isLoginPage && !event.locals.session) {
+		if (isApi) {
+			return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
 		throw redirect(302, '/login');
 	}
 
