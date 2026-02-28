@@ -20,7 +20,8 @@
 		{ href: '/month', label: 'Month' },
 		{ href: '/todos', label: 'Todos' },
 		{ href: '/stats', label: 'Stats' },
-		{ href: '/reading', label: 'Reading' }
+		{ href: '/reading', label: 'Reading' },
+		{ href: '/settings', label: 'Settings' }
 	];
 
 	function isActive(href: string): boolean {

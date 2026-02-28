@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db/index.js';
-import { habits, habitLogs, books } from '$lib/server/db/schema.js';
+import { habits, habitLogs, books, settings } from '$lib/server/db/schema.js';
 import { addDaysToDateStr, getTodayInZone } from '$lib/server/date-tz.js';
 import { computeHabitStats, getYearlyReadingProgress } from '$lib/server/stats-utils.js';
 import { and, eq, gte, lte } from 'drizzle-orm';
@@ -73,7 +73,9 @@ export const load: PageServerLoad = async ({ parent }) => {
 		)
 		.all().length;
 
-	const { yearlyGoal, yearlyProgress } = getYearlyReadingProgress(finishedThisYear);
+	const settingsRow = db.select().from(settings).limit(1).all()[0];
+	const goal = settingsRow?.yearlyGoal ?? 12;
+	const { yearlyGoal, yearlyProgress } = getYearlyReadingProgress(finishedThisYear, goal);
 
 	return {
 		completionRate: habitStats.completionRate,

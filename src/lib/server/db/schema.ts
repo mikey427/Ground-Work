@@ -57,6 +57,13 @@ export const sessions = sqliteTable('sessions', {
 	createdAt: text('created_at').notNull()
 });
 
+/** Single-row app settings (id always 1). */
+export const settings = sqliteTable('settings', {
+	id: integer('id').primaryKey().default(1),
+	yearlyGoal: integer('yearly_goal').notNull().default(12),
+	updatedAt: text('updated_at').notNull()
+});
+
 /** Todo cadence: daily | weekly | monthly | yearly. emailReminder stored as JSON. */
 export const todos = sqliteTable('todos', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
