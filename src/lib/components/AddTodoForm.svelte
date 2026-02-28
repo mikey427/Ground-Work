@@ -23,10 +23,43 @@
 		{ value: 'day_before', label: 'Day before' }
 	];
 
+	const DAY_OPTIONS = [
+		{ value: '0', label: 'Sunday' },
+		{ value: '1', label: 'Monday' },
+		{ value: '2', label: 'Tuesday' },
+		{ value: '3', label: 'Wednesday' },
+		{ value: '4', label: 'Thursday' },
+		{ value: '5', label: 'Friday' },
+		{ value: '6', label: 'Saturday' }
+	];
+
+	const MONTH_OPTIONS = [
+		{ value: '01', label: 'January' },
+		{ value: '02', label: 'February' },
+		{ value: '03', label: 'March' },
+		{ value: '04', label: 'April' },
+		{ value: '05', label: 'May' },
+		{ value: '06', label: 'June' },
+		{ value: '07', label: 'July' },
+		{ value: '08', label: 'August' },
+		{ value: '09', label: 'September' },
+		{ value: '10', label: 'October' },
+		{ value: '11', label: 'November' },
+		{ value: '12', label: 'December' }
+	];
+
+	const DAY_OF_MONTH_OPTIONS = Array.from({ length: 28 }, (_, i) => ({
+		value: String(i + 1),
+		label: String(i + 1)
+	}));
+
 	let reminderEnabled = $state(false);
 	let reminderWhen = $state<EmailReminderWhen>('at_time');
 	let reminderValue = $state('09:00'); // time or minutes
 	let selectedCadence = $state<TodoCadence>(cadence);
+	let isRecurring = $state(false);
+	let yearlyMonth = $state('01');
+	let yearlyDay = $state('1');
 	$effect(() => {
 		selectedCadence = (() => cadence)();
 	});
@@ -51,9 +84,40 @@
 	</select>
 
 	<label class="flex cursor-pointer items-center gap-2">
-		<input type="checkbox" name="recurring" value="1" class="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]/20" />
+		<input type="checkbox" name="recurring" value="1" bind:checked={isRecurring} class="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]/20" />
 		<span class="label mb-0 text-[var(--color-muted)]">Repeating task (repeats every period)</span>
 	</label>
+
+	{#if isRecurring && selectedCadence === 'weekly'}
+		<label for="recurrence-day" class="label">Repeats on</label>
+		<select id="recurrence-day" name="recurrenceDetail" class="input">
+			{#each DAY_OPTIONS as opt}
+				<option value={opt.value}>{opt.label}</option>
+			{/each}
+		</select>
+	{:else if isRecurring && selectedCadence === 'monthly'}
+		<label for="recurrence-dom" class="label">Repeats on day</label>
+		<select id="recurrence-dom" name="recurrenceDetail" class="input">
+			{#each DAY_OF_MONTH_OPTIONS as opt}
+				<option value={opt.value}>{opt.label}</option>
+			{/each}
+		</select>
+	{:else if isRecurring && selectedCadence === 'yearly'}
+		<input type="hidden" name="recurrenceDetail" value="{yearlyMonth}-{yearlyDay.padStart(2, '0')}" />
+		<label class="label">Repeats on</label>
+		<div class="flex gap-2">
+			<select class="input flex-1" bind:value={yearlyMonth}>
+				{#each MONTH_OPTIONS as opt}
+					<option value={opt.value}>{opt.label}</option>
+				{/each}
+			</select>
+			<select class="input w-24" bind:value={yearlyDay}>
+				{#each DAY_OF_MONTH_OPTIONS as opt}
+					<option value={opt.value}>{opt.label}</option>
+				{/each}
+			</select>
+		</div>
+	{/if}
 
 	<fieldset class="flex flex-col gap-2 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)]/50 p-3">
 		<legend class="label">Email reminder</legend>

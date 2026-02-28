@@ -79,10 +79,13 @@
 		const emailReminderWhen = (fd.get('emailReminderWhen') as EmailReminderWhen) || 'at_time';
 		const emailReminderValue = fd.get('emailReminderValue') as string | null;
 
+		const recurrenceDetail = (fd.get('recurrenceDetail') as string | null) || null;
+
 		const body = {
 			title,
 			cadence,
 			recurring,
+			recurrenceDetail,
 			completed: false,
 			emailReminder: {
 				enabled: emailReminderEnabled,

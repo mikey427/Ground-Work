@@ -12,6 +12,25 @@
 	const cadenceLabel = $derived(
 		{ daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly', yearly: 'Yearly' }[todo.cadence]
 	);
+
+	const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+	const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+	const recurrenceLabel = $derived((): string | null => {
+		if (!todo.recurring || !todo.recurrenceDetail) return null;
+		if (todo.cadence === 'weekly') {
+			const d = parseInt(todo.recurrenceDetail);
+			return `Every ${DAY_NAMES[d] ?? '?'}`;
+		}
+		if (todo.cadence === 'monthly') {
+			return `Monthly on ${todo.recurrenceDetail}`;
+		}
+		if (todo.cadence === 'yearly') {
+			const [m, d] = todo.recurrenceDetail.split('-');
+			return `Every ${MONTH_NAMES[(parseInt(m) - 1)] ?? '?'} ${parseInt(d)}`;
+		}
+		return null;
+	})();
 </script>
 
 <div
@@ -40,7 +59,7 @@
 			</span>
 			{#if todo.recurring}
 				<span class="rounded-full bg-[var(--color-primary)]/15 px-2 py-0.5 text-xs text-[var(--color-primary)]">
-					Repeats
+					{recurrenceLabel ?? 'Repeats'}
 				</span>
 			{/if}
 			{#if todo.emailReminder?.enabled}
