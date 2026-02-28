@@ -111,6 +111,79 @@ export function computeHabitStats(
 	};
 }
 
+export interface BookForReadingStats {
+	pageCount: number | null;
+	rating: number | null;
+	startDate: string | null;
+	finishDate: string | null;
+}
+
+export interface BooksByYear {
+	year: number;
+	count: number;
+}
+
+export interface ReadingStatsResult {
+	totalFinished: number;
+	totalPages: number;
+	avgRating: number | null;
+	avgDaysToFinish: number | null;
+	readingPace: number | null;
+	booksByYear: BooksByYear[];
+}
+
+function dateDiffDays(from: string, to: string): number {
+	const msPerDay = 24 * 60 * 60 * 1000;
+	return Math.round(
+		(new Date(to + 'T12:00:00Z').getTime() - new Date(from + 'T12:00:00Z').getTime()) / msPerDay
+	);
+}
+
+export function computeReadingStats(
+	finishedBooks: BookForReadingStats[],
+	today: string
+): ReadingStatsResult {
+	const totalFinished = finishedBooks.length;
+	const totalPages = finishedBooks.reduce((sum, b) => sum + (b.pageCount ?? 0), 0);
+
+	const ratedBooks = finishedBooks.filter((b) => b.rating != null);
+	const avgRating =
+		ratedBooks.length > 0
+			? Math.round((ratedBooks.reduce((sum, b) => sum + b.rating!, 0) / ratedBooks.length) * 10) /
+				10
+			: null;
+
+	const booksWithDates = finishedBooks.filter((b) => b.startDate != null && b.finishDate != null);
+	const avgDaysToFinish =
+		booksWithDates.length > 0
+			? Math.round(
+					booksWithDates.reduce((sum, b) => sum + dateDiffDays(b.startDate!, b.finishDate!), 0) /
+						booksWithDates.length
+				)
+			: null;
+
+	const allStartDates = finishedBooks.filter((b) => b.startDate != null).map((b) => b.startDate!);
+	let readingPace: number | null = null;
+	if (allStartDates.length > 0 && totalPages > 0) {
+		const firstStart = [...allStartDates].sort()[0]!;
+		const totalDays = dateDiffDays(firstStart, today);
+		readingPace = totalDays > 0 ? Math.round((totalPages / totalDays) * 10) / 10 : null;
+	}
+
+	const yearCounts: Record<number, number> = {};
+	for (const b of finishedBooks) {
+		if (b.finishDate) {
+			const year = parseInt(b.finishDate.slice(0, 4), 10);
+			yearCounts[year] = (yearCounts[year] ?? 0) + 1;
+		}
+	}
+	const booksByYear: BooksByYear[] = Object.entries(yearCounts)
+		.map(([year, count]) => ({ year: parseInt(year, 10), count }))
+		.sort((a, b) => a.year - b.year);
+
+	return { totalFinished, totalPages, avgRating, avgDaysToFinish, readingPace, booksByYear };
+}
+
 const DEFAULT_YEARLY_GOAL = 12;
 
 export function getYearlyReadingProgress(

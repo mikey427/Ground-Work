@@ -55,7 +55,13 @@
 </svelte:head>
 
 <div class="flex items-center justify-between gap-2">
-	<h1 class="font-display text-xl font-semibold text-[var(--color-muted)]">Reading</h1>
+	<div class="flex items-center gap-3">
+		<h1 class="font-display text-xl font-semibold text-[var(--color-muted)]">Reading</h1>
+		<a
+			href="/reading/stats"
+			class="text-sm text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)]"
+		>Stats →</a>
+	</div>
 	<button
 		type="button"
 		class="btn-primary shrink-0"
