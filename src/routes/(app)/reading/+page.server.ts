@@ -87,7 +87,23 @@ export const actions: Actions = {
 
 		const coverUrl = coverUrlRaw || null;
 		const genre = genreRaw || null;
-		const startDate = status === 'reading' ? today : null;
+
+		let startDate: string | null = null;
+		let finishDate: string | null = null;
+		if (status === 'reading') {
+			startDate = today;
+		} else if (status === 'finished') {
+			const startRaw = (data.get('startDate') ?? '').toString().trim();
+			const finishRaw = (data.get('finishDate') ?? '').toString().trim();
+			const dateRe = /^\d{4}-\d{2}-\d{2}$/;
+			if (startRaw && dateRe.test(startRaw)) startDate = startRaw;
+			if (finishRaw && dateRe.test(finishRaw)) finishDate = finishRaw;
+			if (startDate && finishDate && finishDate < startDate) {
+				return fail(400, {
+					createBook: { error: 'Finish date must be on or after start date.' }
+				});
+			}
+		}
 
 		const createdAt = now.toISOString();
 
@@ -100,6 +116,7 @@ export const actions: Actions = {
 				pageCount,
 				status,
 				startDate,
+				finishDate,
 				createdAt
 			})
 			.run();

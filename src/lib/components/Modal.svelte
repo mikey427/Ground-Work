@@ -22,7 +22,7 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center p-4"
+		class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4"
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="modal-title"
@@ -35,7 +35,7 @@
 			onclick={onclose}
 		></button>
 		<div
-			class="relative w-full max-w-md rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-6 shadow-lg"
+			class="relative mt-10 mb-6 w-full max-w-md max-h-[calc(100vh-4rem)] overflow-y-auto rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-6 shadow-lg sm:mt-16 sm:mb-8"
 			role="document"
 		>
 			<div class="mb-4 flex items-center justify-between">

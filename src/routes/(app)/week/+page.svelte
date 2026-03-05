@@ -60,10 +60,25 @@
 		if (saving[key]) return;
 		const current = isCompleted(habitId, date);
 		const next = !current;
-		const logId = getLogId(habitId, date);
 		saving[key] = true;
 		saving = saving;
 		try {
+			if (habitId === 'read-today') {
+				const body: { date: string; completed: boolean; logId?: string } = { date, completed: next };
+				if (!next) {
+					const id = getLogId(habitId, date);
+					if (id) body.logId = id;
+				}
+				const res = await fetch('/api/read-today', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
+				});
+				if (!res.ok) return;
+				await invalidateAll();
+				return;
+			}
+			const logId = getLogId(habitId, date);
 			const url = logId ? `/api/habit-logs/${logId}` : '/api/habit-logs';
 			const method = logId ? 'PATCH' : 'POST';
 			const body = logId

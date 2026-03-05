@@ -16,7 +16,16 @@
 
 	const colors = ['#7c9c6b', '#c17f59', '#8b7355', '#6b8e9c', '#9c7c6b', '#7c6b9c'];
 
-const frequencies = [
+	const iconOptions = [
+		{ value: '📚', label: 'Reading' },
+		{ value: '🏃‍♂️', label: 'Exercise' },
+		{ value: '🧘', label: 'Mindfulness' },
+		{ value: '✍️', label: 'Writing' },
+		{ value: '🎨', label: 'Creative' },
+		{ value: '🛏', label: 'Sleep' }
+	];
+
+	const frequencies = [
 		{ value: 'daily', label: 'Every day' },
 		{ value: 'weekdays', label: 'Weekdays (Mon–Fri)' },
 		{ value: '6', label: '6× per week' },
@@ -26,14 +35,46 @@ const frequencies = [
 		{ value: '2', label: '2× per week' },
 		{ value: '1', label: '1× per week' }
 	];
+
+	let selectedIcon = $state<string>('');
+	let customIcon = $state('');
 </script>
 
 <div class="flex flex-col gap-4">
 	<label for="habit-name" class="label">Name</label>
 	<input id="habit-name" name="name" type="text" required placeholder="e.g. Morning stretch" class="input" />
 
-	<label for="habit-icon" class="label">Icon (optional)</label>
-	<input id="habit-icon" name="icon" type="text" placeholder="e.g. stretch" class="input" />
+	<label class="label">Icon (optional)</label>
+	<input type="hidden" name="icon" value={customIcon || selectedIcon} />
+	<div class="flex flex-wrap gap-2">
+		{#each iconOptions as opt}
+			<button
+				type="button"
+				class="flex items-center gap-1 rounded-full border px-2 py-1 text-sm transition-colors {selectedIcon === opt.value
+					? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+					: 'border-[var(--color-border)] text-[var(--color-muted)] hover:bg-[var(--color-border)]/40'}"
+				onclick={() => {
+					selectedIcon = opt.value;
+					customIcon = '';
+				}}
+				aria-pressed={selectedIcon === opt.value}
+			>
+				<span>{opt.value}</span>
+				<span>{opt.label}</span>
+			</button>
+		{/each}
+	</div>
+	<label for="habit-icon-custom" class="text-sm text-[var(--color-muted)]">Or enter a custom icon/label</label>
+	<input
+		id="habit-icon-custom"
+		type="text"
+		class="input"
+		placeholder="e.g. 📖 or Short label"
+		bind:value={customIcon}
+		oninput={() => {
+			if (customIcon) selectedIcon = '';
+		}}
+	/>
 
 	<label for="habit-category" class="label">Category</label>
 	<select id="habit-category" name="category" class="input">

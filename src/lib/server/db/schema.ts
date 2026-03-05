@@ -49,6 +49,14 @@ export const readingLogs = sqliteTable('reading_logs', {
 	createdAt: text('created_at').notNull()
 });
 
+export const moodLogs = sqliteTable('mood_logs', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	date: text('date').notNull(),
+	rating: integer('rating').notNull(),
+	note: text('note'),
+	createdAt: text('created_at').notNull()
+});
+
 /** Session for single-password auth; token is stored in cookie. expiresAt = unix seconds */
 export const sessions = sqliteTable('sessions', {
 	id: integer('id').primaryKey({ autoIncrement: true }),

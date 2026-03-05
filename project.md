@@ -35,6 +35,13 @@ A dedicated section within the app, deeply integrated but with its own UI.
 
 Reading also connects to the habit layer — "did I read today?" is a trackable daily habit that drills into the full book tracker when tapped.
 
+##### "Read today" habit (Goal 2 — implementation notes)
+
+- **Approach: virtual habit.** The "Read today" row is **not** stored in the `habits` table. It is computed in server load and appended to the habit list. Toggle is handled by a dedicated `POST /api/read-today` API that only creates/deletes `reading_logs`. We did **not** add an `is_system` flag or a real DB row because: (1) the existing schema has no `is_system` column; (2) a virtual habit avoids migrations and keeps "Read today" logic in one place; (3) completion is inherently from `reading_logs` (any log on a date = read that day), so a synthetic habit fits better than a habit_log-backed row.
+- **Today page:** Virtual habit appears in the list; toggle ON creates a `reading_log` for today for the most recent "Currently Reading" book (by `books.id` desc); toggle OFF deletes that log (client sends `logId` from load). Habit name is a link to `/reading`; no delete button; no note on Today (note only on book page).
+- **Stats / Week / Month:** "Read today" is included in streak, completion rate, most consistent habit, week grid, and heatmap. Completion is derived from presence of any `reading_log` per date (and in Week, from the same "most recent Currently Reading" book for that date).
+- **Edge cases:** (1) No "Currently Reading" book when toggling ON → API returns 400 with message to add a book from Reading; client reverts the toggle. (2) Multiple "Currently Reading" books → we auto-pick the most recent by `id`; no UI to choose. (3) Toggle OFF uses the log id returned in load, so the correct log is always deleted.
+
 #### Reading Stats
 - Books read per year
 - Total pages read
